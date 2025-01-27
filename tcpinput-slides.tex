@@ -263,16 +263,39 @@
 
 \subsection{Variants for TCP Input}
 \begin{frame}{Variants for TCP Input}
-    \begin{adjustbox}{totalheight=\textheight-3\baselineskip}
-        \input{gnuplot/2025-01-26T17-08-00Z-tcp-0,1,2,3.tex}
+\begin{tikzpicture}
+  \path (0,0) node [anchor=south west] {
+    \begin{adjustbox}{width=\textwidth-0\baselineskip}
+      \input{gnuplot/2025-01-26T17-08-00Z-tcp-0,1,2,3.tex}
     \end{adjustbox}
+  };
+  \path[red,font=\small]
+    (3.8,1.5) node [anchor=south] {exclusive} node [anchor=center] {net lock}
+    ++(2.4,0) node [anchor=south] {goal}
+    ++(2.4,0) node [anchor=south] {cost of} node [anchor=center] {socket lock}
+    ++(2.4,0) node [anchor=south] {parallel} node [anchor=center] {TCP input}
+  ;
+\end{tikzpicture}
 \end{frame}
 
-\section{Bottlenecks}
+\subsection{Exclusive TCP Receive Single Stream}
+\begin{frame}{Exclusive TCP Receive Single Stream}
+    \includegraphics[width=\textwidth]{kstack/sys-tcp-input-solock-rev-single.pdf}
+\end{frame}
 
-\subsection{Parallel TCP Receive}
-\begin{frame}{Parallel TCP Receive}
-    \includegraphics[width=\textwidth]{kstack/sys-tcp-mpinput-rev-parallel.pdf}
+\subsection{Parallel TCP Receive Single Stream}
+\begin{frame}{Parallel TCP Receive Single Stream}
+\begin{tikzpicture}
+  \path (0,0) node [anchor=south west] {
+    \begin{adjustbox}{width=\textwidth-0\baselineskip}
+      \includegraphics[width=\textwidth]{kstack/sys-tcp-mpinput-rev-single.pdf}
+    \end{adjustbox}
+  };
+  \path[ellipse,black,thick]
+    (1.6,2.15) node [draw,minimum width=.8cm,minimum height=.2cm] {}
+    (11.25,3.05) node [draw,minimum width=.5cm,minimum height=.2cm] {}
+  ;
+\end{tikzpicture}
 \end{frame}
 
 \end{document}
