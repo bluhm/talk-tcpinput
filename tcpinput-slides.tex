@@ -47,8 +47,8 @@
 \tableofcontents[currentsection]
 \end{frame}
 
-\subsection{Protocol Stack}
-\begin{frame}{Protocol Stack}
+\subsection{Network Protocol Stack}
+\begin{frame}{Network Protocol Stack}
 \begin{tikzpicture}
   \draw (0,0)
     node (idd) [right] {device driver} ++(.1,.6)
@@ -132,8 +132,8 @@
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
-    node (sb) [right] {send buffer} ++(-.5,-.8)
-    node (to) [right] {tcp\_output()} ++(0,-1.6)
+    node (sb) [right] {send buffer} ++(-.5,-1.4)
+    node (to) [right] {tcp\_output()} ++(0,-1.0)
     node (io) [right] {ip\_output()} ++(0,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
     rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
@@ -184,11 +184,77 @@
   \draw[red] (node cs:name=oso,anchor=east) +(0,-.1)
     node [right] {send buffer mutex};
   \draw[red] (node cs:name=ti,anchor=west) node [left] {exclusive net lock};
-  \path (too) -- (ioi) node [red,midway,right] {socket lock};
-  \draw[red] (node cs:name=ii,anchor=west) node [left] {pf lock};
+  \path (sbo) -- (toi) node [red,midway,right] {socket lock};
+  \draw[red] (node cs:name=ii,anchor=west) node [left] {shared net lock};
   \path (ifo) -- (ifi) node [red,midway,below] {route srp};
   \path (idd) -- (odd) node [red,midway] {multi queue};
+\end{tikzpicture}
+\end{frame}
 
+\subsection{Parallel TCP Input}
+\begin{frame}{Parallel TCP Input}
+\begin{tikzpicture}
+  \draw (0,0)
+    node (idd) [right] {device driver} ++(.1,.6)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(0,.2)
+    node (iq) [right] {input queue} ++(-.5,.8)
+    node (ii) [right] {ip\_input()} ++(0,1.0)
+    node (ti) [right] {tcp\_input()} ++(.1,.8)
+    node (rb) [left] {receive buffer} ++(0,-.2)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4)
+    rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(-.5,1.0)
+    node (iso) [right] {socket} ++(2.2,0)
+
+    node (oso) [right] {socket} ++(.1,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (sb) [right] {send buffer} ++(-.5,-.8)
+    node (to) [right] {tcp\_output()} ++(0,-1.0)
+    node (io) [right] {ip\_output()} ++(0,-.6)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4)
+    rectangle ++(.4,-.4) rectangle ++(.4,.4) ++(0,-.2)
+    node (oq) [right] {output queue} ++(-.5,-.8)
+    node (odd) [right] {device driver}
+    ;
+  \path (node cs:name=idd,anchor=west) +(.3+1*.4,.3) coordinate (iddo) {};
+  \path (node cs:name=iq,anchor=west) +(-.2-2*.4,0) coordinate (iqi) {};
+  \draw[->,double] (iddo) -- (iqi);
+  \path (node cs:name=iq,anchor=west) +(-.2,0) coordinate (iqo) {};
+  \path (node cs:name=ii,anchor=west) +(.3,-.3) coordinate (iii) {};
+  \draw[->,double] (iqo) -- (iii);
+  \path (node cs:name=ii,anchor=west) +(.3,.3) coordinate (iio) {};
+  \path (node cs:name=ti,anchor=west) +(.3,-.3) coordinate (tii) {};
+  \draw[->,double] (iio) -- (tii);
+  \path (node cs:name=ti,anchor=west) +(.3+1*.4,.3) coordinate (iti) {};
+  \path (node cs:name=rb,anchor=east) +(.2+1*.4,0) coordinate (rbi) {};
+  \draw[->,double] (iti) -- (rbi);
+  \path (node cs:name=rb,anchor=east) +(.2+3*.4,0) coordinate (rbo) {};
+  \path (node cs:name=iso,anchor=west) +(.3,-.3) coordinate (isoi) {};
+  \draw[->,double] (rbo) -- (isoi);
+
+  \path (node cs:name=oso,anchor=west) +(.3+1*.4,-.3) coordinate (osoo) {};
+  \path (node cs:name=sb,anchor=west) +(-.2-2*.4,0) coordinate (sbi) {};
+  \draw[->,double] (osoo) -- (sbi);
+  \path (node cs:name=sb,anchor=west) +(-.2,0) coordinate (sbo) {};
+  \path (node cs:name=to,anchor=west) +(.3,.3) coordinate (toi) {};
+  \draw[->,double] (sbo) -- (toi);
+  \path (node cs:name=to,anchor=west) +(.3,-.3) coordinate (too) {};
+  \path (node cs:name=io,anchor=west) +(.3,.3) coordinate (ioi) {};
+  \draw[->,double] (too) -- (ioi);
+  \path (node cs:name=io,anchor=west) +(.6,-.3) coordinate (ioo) {};
+  \path (node cs:name=oq,anchor=west) +(-.2-2*.4,0) coordinate (oqi) {};
+  \draw[->,double] (ioo) -- (oqi);
+  \path (node cs:name=oq,anchor=west) +(-.2,0) coordinate (oqo) {};
+  \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
+  \draw[->,double] (oqo) -- (oddi);
+
+  \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
+  \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
+
+  \draw[red] (node cs:name=ti,anchor=west) node [left] {socket lock};
+  \draw[red] (node cs:name=to,anchor=east) node [right] {socket lock};
+  \draw[red] (node cs:name=ii,anchor=west) node [left] {shared net lock};
 \end{tikzpicture}
 \end{frame}
 
