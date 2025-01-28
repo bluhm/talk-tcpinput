@@ -200,7 +200,7 @@
     node (rb) [left] {receive buffer} ++(0,-.2)
     rectangle ++(.4,.4) rectangle ++(.4,-.4)
     rectangle ++(.4,.4) rectangle ++(.4,-.4) ++(-.5,1.0)
-    node (iso) [right] {socket} ++(2.2,0)
+    node (iso) [right] {socket} ++(2.5,0)
 
     node (oso) [right] {socket} ++(.1,-.6)
     rectangle ++(.4,-.4) rectangle ++(.4,.4)
@@ -245,8 +245,9 @@
   \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
   \draw[->,double] (oqo) -- (oddi);
 
-  \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
-  \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
+  \path (node cs:name=iso,anchor=south) coordinate (tro) {};
+  \path (node cs:name=to,anchor=west) coordinate (tri) {};
+  \draw[->,double] (tro) -- (tri) node [midway,below] {Ack};
 
   \draw[red] (node cs:name=ti,anchor=west) node [left] {socket lock};
   \draw[red] (node cs:name=to,anchor=east) node [right] {socket lock};
@@ -352,8 +353,10 @@
   \path (node cs:name=odd,anchor=west) +(.3,.3) coordinate (oddi) {};
   \draw[->,double] (oqo) -- (oddi);
 
-  \path (node cs:name=ii,anchor=east) +(.1,0) coordinate (ifo) {};
-  \path (node cs:name=io,anchor=west) +(-.1,0) coordinate (ifi) {};
+  \path (node cs:name=iso,anchor=south) coordinate (tro) {};
+  \path (node cs:name=to,anchor=west) coordinate (tri) {};
+  \draw[->,double] (tro) -- (tri) node [midway,below] {Ack};
+
 
   \draw[red] (node cs:name=ti,anchor=west) node [left] {thread socket lock};
   \draw[red] (node cs:name=to,anchor=east) node [right] {socket lock};
@@ -366,8 +369,8 @@
     \includegraphics[width=\textwidth]{kstack/sys-tcp-input-parallel-rev-parallel.pdf}
 \end{frame}
 
-\subsection{Variants for TCP Input}
-\begin{frame}{Variants for TCP Input}
+\subsection{Mission Accomplished}
+\begin{frame}{Mission Accomplished}
 \begin{tikzpicture}
   \path (0,0) node [anchor=south west] {
     \begin{adjustbox}{width=\textwidth-0\baselineskip}
